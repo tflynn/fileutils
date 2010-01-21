@@ -27,8 +27,8 @@ import java.io.IOException;
  */
 public abstract class AbstractFileTraverser {
 
-    protected  org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AbstractFileTraverser.class.getPackage().getName());
-    
+    private  org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AbstractFileTraverser.class);
+
 
     public AbstractFileTraverser(){
         
@@ -56,8 +56,11 @@ public abstract class AbstractFileTraverser {
      * @throws IOException
      */
     public final void traverse( final File f ) throws IOException {
+        if (logger.isTraceEnabled()) logger.trace("traverse: file " + f.getAbsolutePath());
         if (f.exists()) {
+            if (logger.isTraceEnabled()) logger.trace("traverse: file exists " + f.getAbsolutePath());
             if (f.isDirectory()) {
+                if (logger.isTraceEnabled()) logger.trace("traverse: file is a directory " + f.getAbsolutePath());
                 onDirectory(f);
                 final File[] children = f.listFiles();
                 for( File child : children ) {

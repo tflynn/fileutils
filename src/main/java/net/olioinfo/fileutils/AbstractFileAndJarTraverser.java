@@ -22,7 +22,7 @@ import java.util.jar.JarFile;
 
 
 /**
- * Abstract class that implements a AbstractFileTraverser for all Jar files and regular files in a given tree.
+ * Abstract class that implements an AbstractFileTraverser for all Jar files and regular files in a given tree.
  *
  * The includeFile and includeDirectory methods must be implemented to defined selection criteria for
  * inclusion in the final list of matching files and directories.
@@ -32,12 +32,33 @@ import java.util.jar.JarFile;
  */
 public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser {
 
+    private  org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AbstractFileAndJarTraverser.class);
+
     private static final String JAR_FILE_EXTENSION = ".jar";
 
     private ArrayList<VirtualFileEntry> fileList = new ArrayList<VirtualFileEntry>();
     private ArrayList<VirtualFileEntry> directoryList = new ArrayList<VirtualFileEntry>();
 
-    
+
+    public AbstractFileAndJarTraverser() {
+        super();
+        org.apache.log4j.Level loggerLevel = org.apache.log4j.Level.WARN;
+
+        String overrideLogLevel = System.getProperty("net.olioinfo.fileutils.AbstractFileAndJarTraverser.logLevel");
+        if (overrideLogLevel != null) {
+            try {
+                loggerLevel = org.apache.log4j.Level.toLevel(overrideLogLevel);
+            }
+            catch (Exception ex) {
+                loggerLevel = org.apache.log4j.Level.WARN;
+            }
+        }
+        logger.setLevel(loggerLevel);
+        org.apache.log4j.PatternLayout defaultLayout = new org.apache.log4j.PatternLayout();
+        org.apache.log4j.ConsoleAppender appender = new org.apache.log4j.ConsoleAppender(defaultLayout);
+        logger.addAppender(appender);
+
+    }
     /**
      * Implementation of the AbstractFileTraverser.onFile method for Jar and regular files
      *
@@ -60,14 +81,14 @@ public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser 
                     virtualFileEntry.setRelativeFilePath(jarEntry.getName());
 
                     if (includeFile(virtualFileEntry)) {
-                        logger.trace("Adding to file list path: " + path );
+                        if (logger.isTraceEnabled()) logger.trace("Adding Jar entry to virtual file list: " + path + ":" + jarEntry.getName());
                         fileList.add(virtualFileEntry);
                     }
                 }
                 jarFile.close();
             }
             catch (Exception ex) {
-                logger.warn("net.olioinfo.fileutils.AbstractFileAndJarTraverser.onFile processing " + path + " generated an error. This file will be ignored.",ex);
+                logger.warn("Error during onFile processing " + path + " generated an error. This file will be ignored.",ex);
             }
 
         }
@@ -78,7 +99,7 @@ public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser 
             virtualFileEntry.setFileType(VirtualFileEntry.TYPE_FILE);
 
             if (includeFile(virtualFileEntry)) {
-                logger.trace("Adding to file list path: " + path );
+                if (logger.isTraceEnabled()) logger.trace("Adding regular file entry to virtual file list: " + path );
                 fileList.add(virtualFileEntry);
             }
         }

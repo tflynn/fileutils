@@ -16,7 +16,7 @@ package net.olioinfo.fileutils;
 
 
 /**
- * An abstract representation of a directory (tree) or JAR file
+ * An abstract representation of a directory, file or JAR file
  *
  * @author Tracy Flynn
  * @since Jan 20, 2010
