@@ -19,7 +19,8 @@ package net.olioinfo.fileutils;
  * A representation of a directory, file or JAR file
  *
  * @author Tracy Flynn
- * @since Jan 20, 2010
+ * @version 0.3
+ * @since 0.1
  */
 public class VirtualFileEntry {
 

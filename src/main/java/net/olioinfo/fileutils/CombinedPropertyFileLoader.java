@@ -26,14 +26,22 @@ import java.util.jar.JarFile;
 
 
 /**
- * Find all the property files in the specified trees, and load them all into a single Properties instance
+ * <p>Find all the property files in the specified trees, and load them all into a single Properties instance.</p>
+ *
+ * <p>For example:</p>
+ * <pre>
+ * Properties combinedProps = CombinedPropertyFileLoader.loadAndCombineProperties(System.getProperty("user.dir"),"test-props.properties");
+ * </pre>
+ * <p>will load all the property files named 'test-props.properties' in the tree rooted at
+ *  'System.getProperty("user.dir")' ('user.dir' is usually the directory active when the JVM is started).</p>
  *
  * @author Tracy Flynn
- * @since Jan 21, 2010
+ * @version 0.3
+ * @since 0.1
  */
 public class CombinedPropertyFileLoader {
 
-    private  org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(CombinedPropertyFileLoader.class);
+    public  static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(CombinedPropertyFileLoader.class);
 
     private Properties combinedProperties = new Properties();
 
@@ -73,27 +81,8 @@ public class CombinedPropertyFileLoader {
     /**
      * <p>Create an instance of CombinedPropertyFileLoader.</p>
      *
-     * <p>Initialize logging using log4j. The default 'WARN' logging level can be overridden by specifying
-     * -Dnet.olioinfo.fileutils.CombinedPropertyFileLoader.logLevel=TRACE (or other level) when starting the JVM.
-     * Configuration using the standard log4j.properties approach also works.</p>
      */
     public CombinedPropertyFileLoader(){
-
-        org.apache.log4j.Level loggerLevel = org.apache.log4j.Level.WARN;
-
-        String overrideLogLevel = System.getProperty("net.olioinfo.fileutils.CombinedPropertyFileLoader.logLevel");
-        if (overrideLogLevel != null) {
-            try {
-                loggerLevel = org.apache.log4j.Level.toLevel(overrideLogLevel);
-            }
-            catch (Exception ex) {
-                loggerLevel = org.apache.log4j.Level.WARN;
-            }
-        }
-        logger.setLevel(loggerLevel);
-        org.apache.log4j.PatternLayout defaultLayout = new org.apache.log4j.PatternLayout();
-        org.apache.log4j.ConsoleAppender appender = new org.apache.log4j.ConsoleAppender(defaultLayout);
-        logger.addAppender(appender);
     }
 
     /**

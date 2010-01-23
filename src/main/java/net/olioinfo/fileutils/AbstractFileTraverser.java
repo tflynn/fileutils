@@ -15,8 +15,11 @@
 package net.olioinfo.fileutils;
 
 
+import org.apache.log4j.Appender;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
 
 
 /**
@@ -27,36 +30,31 @@ import java.io.IOException;
  * start the traversal.</p>
  *
  * @author Tracy Flynn
- * @since Jan 20, 2010
+ * @version 0.3
+ * @since 0.1
  */
 public abstract class AbstractFileTraverser {
 
-    private  org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AbstractFileTraverser.class);
+    public static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AbstractFileTraverser.class);
+
+    private static final String CONSOLE_APPENDER_NAME = "net.olioinfo.fileutils.AbstractFileTraverser.CONSOLE_APPENDER";
 
     /**
      * <p>Create an instance of AbstractFileTraverser.</p>
      *
      * <p>Initialize logging using log4j. The default 'WARN' logging level can be overridden by specifying
-     * -Dnet.olioinfo.fileutils.AbstractFileTraverser.logLevel=TRACE (or other level) when starting the JVM.
-     * Configuration using the standard log4j.properties approach also works.</p>
+     * -Dnet.olioinfo.fileutils.logLevel=TRACE (or other level) when starting the JVM.
+     * </p>
+     *
+     * <p>To change the logging for this module in a log4j / log4j-ext properties file use the class names</p>
+     * <ul>
+     *   <li>net.olioinfo.fileutils.AbstractFileTraverser</li>
+     *   <li>net.olioinfo.fileutils.AbstractFileAndJarTraverser</li>
+     *   <li>net.olioinfo.fileutils.CombinedPropertyFileLoader</li>
+     * </ul>
      */
     public AbstractFileTraverser(){
-        
-        org.apache.log4j.Level loggerLevel = org.apache.log4j.Level.WARN;
-
-        String overrideLogLevel = System.getProperty("net.olioinfo.fileutils.AbstractFileTraverser.logLevel");
-        if (overrideLogLevel != null) {
-            try {
-                loggerLevel = org.apache.log4j.Level.toLevel(overrideLogLevel);
-            }
-            catch (Exception ex) {
-                loggerLevel = org.apache.log4j.Level.WARN;
-            }
-        }
-        logger.setLevel(loggerLevel);
-        org.apache.log4j.PatternLayout defaultLayout = new org.apache.log4j.PatternLayout();
-        org.apache.log4j.ConsoleAppender appender = new org.apache.log4j.ConsoleAppender(defaultLayout);
-        logger.addAppender(appender);
+        configureLogging();
     }
 
     /**
@@ -95,4 +93,41 @@ public abstract class AbstractFileTraverser {
      * @param f File object representing the file to be processed
      */
     public abstract void onFile( final File f );
+
+
+    /*
+     * Configure internal logging. This method may be called safely multiple times
+     */
+    private static void configureLogging() {
+
+        Enumeration<Appender> appenders = AbstractFileTraverser.logger.getAllAppenders();
+        // Only add a console appender if there isn't an appender of any kind there already
+        if (! appenders.hasMoreElements()) {
+            org.apache.log4j.Level level = org.apache.log4j.Level.WARN;
+            String overrideLogLevel = System.getProperty("net.olioinfo.fileutils.logLevel");
+            if (overrideLogLevel != null) {
+                try {
+                    level = org.apache.log4j.Level.toLevel(overrideLogLevel);
+                }
+                catch (Exception ex) {
+                    level = org.apache.log4j.Level.WARN;
+                }
+            }
+
+            org.apache.log4j.PatternLayout patternLayout = new org.apache.log4j.PatternLayout("%5p [%t] (%F:%L) - %m%n");
+            org.apache.log4j.ConsoleAppender appender = new org.apache.log4j.ConsoleAppender(patternLayout,"System.out");
+            appender.setName(AbstractFileTraverser.CONSOLE_APPENDER_NAME);
+
+            // Set log levels and appenders for everyone
+            AbstractFileTraverser.logger.setLevel(level);
+            AbstractFileTraverser.logger.addAppender(appender);
+            AbstractFileAndJarTraverser.logger.setLevel(level);
+            AbstractFileAndJarTraverser.logger.addAppender(appender);
+            CombinedPropertyFileLoader.logger.setLevel(level);
+            CombinedPropertyFileLoader.logger.addAppender(appender);
+            
+
+        }
+    }
+
 }

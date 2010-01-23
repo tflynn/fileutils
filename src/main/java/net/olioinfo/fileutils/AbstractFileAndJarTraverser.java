@@ -28,11 +28,12 @@ import java.util.jar.JarFile;
  * to define selection criteria for inclusion in the final list of matching files and directories.</p>
  *
  * @author Tracy Flynn
- * @since Jan 20, 2010
+ * @version 0.3
+ * @since 0.1
  */
 public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser {
 
-    private  org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AbstractFileAndJarTraverser.class);
+    public  static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AbstractFileAndJarTraverser.class);
 
     private static final String JAR_FILE_EXTENSION = ".jar";
 
@@ -42,28 +43,9 @@ public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser 
     /**
      * <p>Create an instance of AbstractFileAndJarTraverser.</p>
      *
-     * <p>Initialize logging using log4j. The default 'WARN' logging level can be overridden by specifying
-     * -Dnet.olioinfo.fileutils.AbstractFileAndJarTraverser.logLevel=TRACE (or other level) when starting the JVM.
-     * Configuration using the standard log4j.properties approach also works.</p>
      */
     public AbstractFileAndJarTraverser() {
         super();
-        org.apache.log4j.Level loggerLevel = org.apache.log4j.Level.WARN;
-
-        String overrideLogLevel = System.getProperty("net.olioinfo.fileutils.AbstractFileAndJarTraverser.logLevel");
-        if (overrideLogLevel != null) {
-            try {
-                loggerLevel = org.apache.log4j.Level.toLevel(overrideLogLevel);
-            }
-            catch (Exception ex) {
-                loggerLevel = org.apache.log4j.Level.WARN;
-            }
-        }
-        logger.setLevel(loggerLevel);
-        org.apache.log4j.PatternLayout defaultLayout = new org.apache.log4j.PatternLayout();
-        org.apache.log4j.ConsoleAppender appender = new org.apache.log4j.ConsoleAppender(defaultLayout);
-        logger.addAppender(appender);
-
     }
     /**
      * Implementation of the AbstractFileTraverser.onFile method for Jar and regular files
