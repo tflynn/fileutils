@@ -22,10 +22,10 @@ import java.util.jar.JarFile;
 
 
 /**
- * Abstract class that implements an AbstractFileTraverser for all Jar files and regular files in a given tree.
+ * <p>An abstract class that implements an AbstractFileTraverser for all Jar files and regular files in a given tree.</p>
  *
- * The includeFile and includeDirectory methods must be implemented to defined selection criteria for
- * inclusion in the final list of matching files and directories.
+ * <p>To make a concrete class, the includeFile and includeDirectory methods must be implemented
+ * to define selection criteria for inclusion in the final list of matching files and directories.</p>
  *
  * @author Tracy Flynn
  * @since Jan 20, 2010
@@ -39,7 +39,13 @@ public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser 
     private ArrayList<VirtualFileEntry> fileList = new ArrayList<VirtualFileEntry>();
     private ArrayList<VirtualFileEntry> directoryList = new ArrayList<VirtualFileEntry>();
 
-
+    /**
+     * <p>Create an instance of AbstractFileAndJarTraverser.</p>
+     *
+     * <p>Initialize logging using log4j. The default 'WARN' logging level can be overridden by specifying
+     * -Dnet.olioinfo.fileutils.AbstractFileAndJarTraverser.logLevel=TRACE (or other level) when starting the JVM.
+     * Configuration using the standard log4j.properties approach also works.</p>
+     */
     public AbstractFileAndJarTraverser() {
         super();
         org.apache.log4j.Level loggerLevel = org.apache.log4j.Level.WARN;

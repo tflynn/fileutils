@@ -71,9 +71,11 @@ public class CombinedPropertyFileLoader {
     }
 
     /**
-     * Instantiate a new CombinedPropertyFileLoader instance
+     * <p>Create an instance of CombinedPropertyFileLoader.</p>
      *
-     * Initialize logging
+     * <p>Initialize logging using log4j. The default 'WARN' logging level can be overridden by specifying
+     * -Dnet.olioinfo.fileutils.CombinedPropertyFileLoader.logLevel=TRACE (or other level) when starting the JVM.
+     * Configuration using the standard log4j.properties approach also works.</p>
      */
     public CombinedPropertyFileLoader(){
 

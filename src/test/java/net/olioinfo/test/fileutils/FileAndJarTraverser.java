@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.olioinfo.fileutils.test;
+package net.olioinfo.test.fileutils;
 
 import net.olioinfo.fileutils.AbstractFileAndJarTraverser;
 import net.olioinfo.fileutils.VirtualFileEntry;

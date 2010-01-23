@@ -20,7 +20,11 @@ import java.io.IOException;
 
 
 /**
- * Traverses a directory tree starting at a given point
+ * <p>An abstract cleas that traverses a directory tree starting at a given point.</p>
+ *
+ * <p>To make a concrete class, extend and implement onDirectory() and onFile() methods. These methods are called once
+ * per directory or file encountered while traversing the tree. Call traverse(somePath) on the root of the tree to
+ * start the traversal.</p>
  *
  * @author Tracy Flynn
  * @since Jan 20, 2010
@@ -29,7 +33,13 @@ public abstract class AbstractFileTraverser {
 
     private  org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AbstractFileTraverser.class);
 
-
+    /**
+     * <p>Create an instance of AbstractFileTraverser.</p>
+     *
+     * <p>Initialize logging using log4j. The default 'WARN' logging level can be overridden by specifying
+     * -Dnet.olioinfo.fileutils.AbstractFileTraverser.logLevel=TRACE (or other level) when starting the JVM.
+     * Configuration using the standard log4j.properties approach also works.</p>
+     */
     public AbstractFileTraverser(){
         
         org.apache.log4j.Level loggerLevel = org.apache.log4j.Level.WARN;

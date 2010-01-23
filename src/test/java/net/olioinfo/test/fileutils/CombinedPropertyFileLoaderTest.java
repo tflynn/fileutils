@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.olioinfo.fileutils.test;
+package net.olioinfo.test.fileutils;
 
 
 import junit.framework.Test;
@@ -21,9 +21,6 @@ import junit.framework.TestSuite;
 
 import net.olioinfo.fileutils.CombinedPropertyFileLoader;
 
-import java.io.File;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Properties;
 
 
