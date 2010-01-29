@@ -19,7 +19,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import net.olioinfo.fileutils.CombinedPropertyFileLoader;
+import net.olioinfo.fileutils.CombinedPropertyFileManager;
 
 import java.util.Properties;
 
@@ -51,22 +51,30 @@ public class CombinedPropertyFileLoaderTest extends TestCase {
      }
 
      /**
-      * Rigourous Test :-)
+      * Test load with simple file name
       */
      public void testCombinedPropertyFileLoaderTest()
      {
-         Properties combinedProps = CombinedPropertyFileLoader.loadAndCombineProperties(System.getProperty("user.dir"),"test-props.properties");
-//         Enumeration combinedPropsEnum = combinedProps.keys();
-//         while (combinedPropsEnum.hasMoreElements()) {
-//             String key = (String) combinedPropsEnum.nextElement();
-//             String value = combinedProps.getProperty(key);
-//             System.out.println(key + " = " + value);
-//         }
+         Properties combinedProps = CombinedPropertyFileManager.loadAndCombineProperties(System.getProperty("user.dir"),"test-props.properties");
 
          assertEquals("second unique" , combinedProps.getProperty("test.props.2"));
          assertEquals("first unique" , combinedProps.getProperty("test.props.1"));
          assertEquals("second" , combinedProps.getProperty("test.props.common"));
-         
+
      }
+
+//    /**
+//     * Test load with file name as regex
+//     */
+//    public void testCombinedPropertyFileLoaderTestWithRegex()
+//    {
+//        //Properties combinedProps = CombinedPropertyFileManager.loadAndCombineProperties(System.getProperty("user.dir"),"test-props.properties$");
+//        Properties combinedProps = CombinedPropertyFileManager.loadAndCombineProperties(System.getProperty("user.dir") + "/src/test/java/net/olioinfo/test/fileutils","test-props.properties\\$");
+//
+//        assertEquals("second unique" , combinedProps.getProperty("test.props.2"));
+//        assertEquals("first unique" , combinedProps.getProperty("test.props.1"));
+//        assertEquals("second" , combinedProps.getProperty("test.props.common"));
+//
+//    }
 
 }

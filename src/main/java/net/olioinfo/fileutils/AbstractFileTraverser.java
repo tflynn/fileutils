@@ -50,7 +50,7 @@ public abstract class AbstractFileTraverser {
      * <ul>
      *   <li>net.olioinfo.fileutils.AbstractFileTraverser</li>
      *   <li>net.olioinfo.fileutils.AbstractFileAndJarTraverser</li>
-     *   <li>net.olioinfo.fileutils.CombinedPropertyFileLoader</li>
+     *   <li>net.olioinfo.fileutils.CombinedPropertyFileManager</li>
      * </ul>
      */
     public AbstractFileTraverser(){
@@ -123,8 +123,8 @@ public abstract class AbstractFileTraverser {
             AbstractFileTraverser.logger.addAppender(appender);
             AbstractFileAndJarTraverser.logger.setLevel(level);
             AbstractFileAndJarTraverser.logger.addAppender(appender);
-            CombinedPropertyFileLoader.logger.setLevel(level);
-            CombinedPropertyFileLoader.logger.addAppender(appender);
+            CombinedPropertyFileManager.logger.setLevel(level);
+            CombinedPropertyFileManager.logger.addAppender(appender);
             
 
         }
