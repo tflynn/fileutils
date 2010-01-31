@@ -125,7 +125,9 @@ public abstract class AbstractFileTraverser {
             AbstractFileAndJarTraverser.logger.addAppender(appender);
             CombinedPropertyFileManager.logger.setLevel(level);
             CombinedPropertyFileManager.logger.addAppender(appender);
-            
+            MatchingFileTraverser.logger.setLevel(level);
+            MatchingFileTraverser.logger.addAppender(appender);
+
 
         }
     }
