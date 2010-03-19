@@ -39,6 +39,8 @@ public abstract class AbstractFileTraverser {
 
     private static final String CONSOLE_APPENDER_NAME = "net.olioinfo.fileutils.AbstractFileTraverser.CONSOLE_APPENDER";
 
+    protected boolean consoleTracing = false;
+
     /**
      * <p>Create an instance of AbstractFileTraverser.</p>
      *
@@ -55,6 +57,9 @@ public abstract class AbstractFileTraverser {
      */
     public AbstractFileTraverser(){
         configureLogging();
+        if (System.getProperty("net.olioinfo.fileutils.consoleTracing") != null) {
+            consoleTracing = true;
+        }
     }
 
     /**
@@ -65,10 +70,13 @@ public abstract class AbstractFileTraverser {
      */
     public final void traverse( final File f ) throws IOException {
         if (logger.isTraceEnabled()) logger.trace("traverse: file " + f.getAbsolutePath());
+        if (consoleTracing) System.out.println("traverse: file " + f.getAbsolutePath());
         if (f.exists()) {
             if (logger.isTraceEnabled()) logger.trace("traverse: file exists " + f.getAbsolutePath());
+            if (consoleTracing) System.out.println("traverse: file exists " + f.getAbsolutePath());
             if (f.isDirectory()) {
                 if (logger.isTraceEnabled()) logger.trace("traverse: file is a directory " + f.getAbsolutePath());
+                if (consoleTracing) System.out.println("traverse: file is a directory " + f.getAbsolutePath());
                 onDirectory(f);
                 final File[] children = f.listFiles();
                 for( File child : children ) {
@@ -99,6 +107,10 @@ public abstract class AbstractFileTraverser {
      * Configure internal logging. This method may be called safely multiple times
      */
     private static void configureLogging() {
+
+        if (System.getProperty("net.olioinfo.fileutils.logging.configuration.disableInternalConfiguration") != null) {
+           return; 
+        }
 
         Enumeration<Appender> appenders = AbstractFileTraverser.logger.getAllAppenders();
         // Only add a console appender if there isn't an appender of any kind there already
