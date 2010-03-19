@@ -16,7 +16,6 @@ package net.olioinfo.fileutils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,8 +29,6 @@ import java.util.regex.Pattern;
  */
 public class MatchingFileTraverser extends AbstractFileTraverser {
 
-    public  static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(MatchingFileTraverser.class);
-
     private String filePatternMatch;
 
     private Pattern filePatternMatchRegex;
@@ -39,7 +36,7 @@ public class MatchingFileTraverser extends AbstractFileTraverser {
 
     private ArrayList<String> fileList = new ArrayList<String>();
     private ArrayList<String> directoryList = new ArrayList<String>();
-    
+
     /**
      * <p>Create an instance of MatchingFileTraverser.</p>
      *
@@ -71,7 +68,10 @@ public class MatchingFileTraverser extends AbstractFileTraverser {
             this.filePatternMatchRegex = Pattern.compile(this.filePatternMatch);
         }
         catch (Exception ex) {
-            logger.error("Exception raised while trying to compile supplied file name regular expression \"" + this.filePatternMatch + "\"");
+            if (consoleTracing) {
+                System.out.println("MatchingFileTraverser.setFilePatternMatch Exception raised while trying to compile supplied file name regular expression \"" + this.filePatternMatch + "\" " + ex.toString() );
+                ex.printStackTrace(System.out);
+            }
             this.filePatternMatchRegex = null;
         }
     }
@@ -132,6 +132,11 @@ public class MatchingFileTraverser extends AbstractFileTraverser {
      */
     public static ArrayList<String> findFilesByPackageAndPaths(Class klass, ArrayList<String> paths, String matchingFilename) {
 
+        boolean  consoleTracing = false;
+        if (System.getProperty("net.olioinfo.fileutils.consoleTracing") != null) {
+            consoleTracing = true;
+        }
+
         ArrayList<String> matchingPaths = new ArrayList<String>();
 
         String packageName = klass.getPackage().getName();
@@ -144,7 +149,10 @@ public class MatchingFileTraverser extends AbstractFileTraverser {
                 }
             }
             catch (Exception ex) {
-                logger.error("Ignoring error matching path " + fullPathName,ex);
+                if (consoleTracing) {
+                    System.out.println("MatchingFileTraverser.findFilesByPackageAndPaths Ignoring error matching path " + fullPathName + " " + ex.toString());
+                    ex.printStackTrace(System.out);
+                }
             }
         }
         return matchingPaths;

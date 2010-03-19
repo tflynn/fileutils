@@ -15,11 +15,8 @@
 package net.olioinfo.fileutils;
 
 
-import org.apache.log4j.Appender;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
 
 
 /**
@@ -33,16 +30,6 @@ import java.util.Enumeration;
  * They should not be used in other cases or in production, since they cause performance degradation and
  * may generate a lot of output. These options apply to the whole package.</p>
  *
- * <ul><li>-Dnet.olioinfo.fileutils.logging.configuration.disableInternalConfiguration</li></ul>
- *
- * <p>Disable any internal configuration of loggers using log4j.
- * The default logger is a org.apache.log4j.ConsoleAppender at level WARN.
- * This may generate errors due to incomplete Log4J configuration information. </p>
- *
- * <ul><li>-Dnet.olioinfo.fileutils.logLevel</li></ul>
- *
- * <p>Override the default Log4j logging level of WARN. </p>
- *
  * <ul><li>-Dnet.olioinfo.fileutils.consoleTracing</li></ul>
  *
  * <p>Provide detailed tracing to the System.out device. Does not use logging. </p>
@@ -52,10 +39,6 @@ import java.util.Enumeration;
  * @since 0.1
  */
 public abstract class AbstractFileTraverser {
-
-    public static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AbstractFileTraverser.class);
-
-    private static final String CONSOLE_APPENDER_NAME = "net.olioinfo.fileutils.AbstractFileTraverser.CONSOLE_APPENDER";
 
     protected boolean consoleTracing = false;
 
@@ -74,7 +57,6 @@ public abstract class AbstractFileTraverser {
      * </ul>
      */
     public AbstractFileTraverser(){
-        configureLogging();
         if (System.getProperty("net.olioinfo.fileutils.consoleTracing") != null) {
             consoleTracing = true;
         }
@@ -87,13 +69,10 @@ public abstract class AbstractFileTraverser {
      * @throws IOException
      */
     public final void traverse( final File f ) throws IOException {
-        if (logger.isTraceEnabled()) logger.trace("traverse: file " + f.getAbsolutePath());
         if (consoleTracing) System.out.println("traverse: file " + f.getAbsolutePath());
         if (f.exists()) {
-            if (logger.isTraceEnabled()) logger.trace("traverse: file exists " + f.getAbsolutePath());
             if (consoleTracing) System.out.println("AbstractFileTraverser: traverse: file exists " + f.getAbsolutePath());
             if (f.isDirectory()) {
-                if (logger.isTraceEnabled()) logger.trace("traverse: file is a directory " + f.getAbsolutePath());
                 if (consoleTracing) System.out.println("AbstractFileTraverser: traverse: file is a directory " + f.getAbsolutePath());
                 onDirectory(f);
                 final File[] children = f.listFiles();
@@ -119,47 +98,5 @@ public abstract class AbstractFileTraverser {
      * @param f File object representing the file to be processed
      */
     public abstract void onFile( final File f );
-
-
-    /*
-     * Configure internal logging. This method may be called safely multiple times
-     */
-    private static void configureLogging() {
-
-        if (System.getProperty("net.olioinfo.fileutils.logging.configuration.disableInternalConfiguration") != null) {
-           return; 
-        }
-
-        Enumeration<Appender> appenders = AbstractFileTraverser.logger.getAllAppenders();
-        // Only add a console appender if there isn't an appender of any kind there already
-        if (! appenders.hasMoreElements()) {
-            org.apache.log4j.Level level = org.apache.log4j.Level.WARN;
-            String overrideLogLevel = System.getProperty("net.olioinfo.fileutils.logLevel");
-            if (overrideLogLevel != null) {
-                try {
-                    level = org.apache.log4j.Level.toLevel(overrideLogLevel);
-                }
-                catch (Exception ex) {
-                    level = org.apache.log4j.Level.WARN;
-                }
-            }
-
-            org.apache.log4j.PatternLayout patternLayout = new org.apache.log4j.PatternLayout("%5p [%t] (%F:%L) - %m%n");
-            org.apache.log4j.ConsoleAppender appender = new org.apache.log4j.ConsoleAppender(patternLayout,"System.out");
-            appender.setName(AbstractFileTraverser.CONSOLE_APPENDER_NAME);
-
-            // Set log levels and appenders for everyone
-            AbstractFileTraverser.logger.setLevel(level);
-            AbstractFileTraverser.logger.addAppender(appender);
-            AbstractFileAndJarTraverser.logger.setLevel(level);
-            AbstractFileAndJarTraverser.logger.addAppender(appender);
-            CombinedPropertyFileManager.logger.setLevel(level);
-            CombinedPropertyFileManager.logger.addAppender(appender);
-            MatchingFileTraverser.logger.setLevel(level);
-            MatchingFileTraverser.logger.addAppender(appender);
-
-
-        }
-    }
 
 }

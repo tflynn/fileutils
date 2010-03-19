@@ -33,8 +33,6 @@ import java.util.jar.JarFile;
  */
 public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser {
 
-    public  static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(AbstractFileAndJarTraverser.class);
-
     private static final String JAR_FILE_EXTENSION = ".jar";
 
     private ArrayList<VirtualFileEntry> fileList = new ArrayList<VirtualFileEntry>();
@@ -69,15 +67,17 @@ public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser 
                     virtualFileEntry.setRelativeFilePath(jarEntry.getName());
 
                     if (includeFile(virtualFileEntry)) {
-                        if (logger.isTraceEnabled()) logger.trace("Adding Jar entry to virtual file list: " + path + ":" + jarEntry.getName());
-                        if (consoleTracing) System.out.println("AbstractFileAndJarTraverser: Adding Jar entry to virtual file list: " + path + ":" + jarEntry.getName());
+                        if (consoleTracing) System.out.println("AbstractFileAndJarTraverser:onFile Adding Jar entry to virtual file list: " + path + ":" + jarEntry.getName());
                         fileList.add(virtualFileEntry);
                     }
                 }
                 jarFile.close();
             }
             catch (Exception ex) {
-                logger.warn("Error during onFile processing " + path + " generated an error. This file will be ignored.",ex);
+                if (consoleTracing) {
+                    System.out.println("AbstractFileAndJarTraverser:onFile  Error during onFile processing " + path + " generated an error. This file will be ignored. " + ex.toString());
+                    ex.printStackTrace(System.out);
+                }
             }
 
         }
@@ -88,8 +88,7 @@ public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser 
             virtualFileEntry.setFileType(VirtualFileEntry.TYPE_FILE);
 
             if (includeFile(virtualFileEntry)) {
-                if (logger.isTraceEnabled()) logger.trace("Adding regular file entry to virtual file list: " + path );
-                if (consoleTracing) System.out.println("AbstractFileAndJarTraverser: Adding regular file entry to virtual file list: " + path );
+                if (consoleTracing) System.out.println("AbstractFileAndJarTraverser:onFile Adding regular file entry to virtual file list: " + path );
                 fileList.add(virtualFileEntry);
             }
         }
