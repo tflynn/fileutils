@@ -70,7 +70,7 @@ public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser 
 
                     if (includeFile(virtualFileEntry)) {
                         if (logger.isTraceEnabled()) logger.trace("Adding Jar entry to virtual file list: " + path + ":" + jarEntry.getName());
-                        if (consoleTracing) System.out.println("Adding Jar entry to virtual file list: " + path + ":" + jarEntry.getName());
+                        if (consoleTracing) System.out.println("AbstractFileAndJarTraverser: Adding Jar entry to virtual file list: " + path + ":" + jarEntry.getName());
                         fileList.add(virtualFileEntry);
                     }
                 }
@@ -89,7 +89,7 @@ public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser 
 
             if (includeFile(virtualFileEntry)) {
                 if (logger.isTraceEnabled()) logger.trace("Adding regular file entry to virtual file list: " + path );
-                if (consoleTracing) System.out.println("Adding regular file entry to virtual file list: " + path );
+                if (consoleTracing) System.out.println("AbstractFileAndJarTraverser: Adding regular file entry to virtual file list: " + path );
                 fileList.add(virtualFileEntry);
             }
         }

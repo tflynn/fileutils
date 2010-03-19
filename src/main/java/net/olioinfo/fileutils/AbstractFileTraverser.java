@@ -91,10 +91,10 @@ public abstract class AbstractFileTraverser {
         if (consoleTracing) System.out.println("traverse: file " + f.getAbsolutePath());
         if (f.exists()) {
             if (logger.isTraceEnabled()) logger.trace("traverse: file exists " + f.getAbsolutePath());
-            if (consoleTracing) System.out.println("traverse: file exists " + f.getAbsolutePath());
+            if (consoleTracing) System.out.println("AbstractFileTraverser: traverse: file exists " + f.getAbsolutePath());
             if (f.isDirectory()) {
                 if (logger.isTraceEnabled()) logger.trace("traverse: file is a directory " + f.getAbsolutePath());
-                if (consoleTracing) System.out.println("traverse: file is a directory " + f.getAbsolutePath());
+                if (consoleTracing) System.out.println("AbstractFileTraverser: traverse: file is a directory " + f.getAbsolutePath());
                 onDirectory(f);
                 final File[] children = f.listFiles();
                 for( File child : children ) {

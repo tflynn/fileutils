@@ -133,7 +133,7 @@ public class CombinedPropertyFileManager {
         try {
             this.compiledPropertyFilenameRegex = Pattern.compile(propertyFileName);
             if (logger.isTraceEnabled()) logger.trace("Regex compilation succeeded for \"" + propertyFileName + "\"");
-            if (consoleTracing) System.out.println("Regex compilation succeeded for \"" + propertyFileName + "\"");
+            if (consoleTracing) System.out.println("CombinedPropertyFileManager: Regex compilation succeeded for \"" + propertyFileName + "\"");
         }
         catch (Exception ex) {
             logger.info("Unable to treat filename as regular expression. Defaulting to matching at end of path.",ex);
@@ -158,14 +158,14 @@ public class CombinedPropertyFileManager {
                         Matcher matcher = compiledPropertyFilenameRegex.matcher(virtualFileEntry.getRelativeFilePath());
                         if (matcher.matches()) {
                             if (logger.isTraceEnabled()) logger.trace("Property file " + propertyFileName + " regex matched in Jar file " + virtualFileEntry.getAbsoluteFilePath() + ":" + virtualFileEntry.getRelativeFilePath());
-                            if (consoleTracing) System.out.println("Property file " + propertyFileName + " regex matched in Jar file " + virtualFileEntry.getAbsoluteFilePath() + ":" + virtualFileEntry.getRelativeFilePath());
+                            if (consoleTracing) System.out.println("CombinedPropertyFileManager: Property file " + propertyFileName + " regex matched in Jar file " + virtualFileEntry.getAbsoluteFilePath() + ":" + virtualFileEntry.getRelativeFilePath());
                             return true;
                         }
                     }
                     // Deliberately fall through to simple casd if match doesn't work - that way we don't have to specify a regex to get a match
                     if (virtualFileEntry.getRelativeFilePath().endsWith(propertyFileName)) {
                         if (logger.isTraceEnabled()) logger.trace("Property file " + propertyFileName + " matched in Jar file " + virtualFileEntry.getAbsoluteFilePath() + ":" + virtualFileEntry.getRelativeFilePath());
-                        if (consoleTracing) System.out.println("Property file " + propertyFileName + " matched in Jar file " + virtualFileEntry.getAbsoluteFilePath() + ":" + virtualFileEntry.getRelativeFilePath());
+                        if (consoleTracing) System.out.println("CombinedPropertyFileManager: Property file " + propertyFileName + " matched in Jar file " + virtualFileEntry.getAbsoluteFilePath() + ":" + virtualFileEntry.getRelativeFilePath());
                         return true;
                     }
                 }
@@ -174,14 +174,14 @@ public class CombinedPropertyFileManager {
                         Matcher matcher = compiledPropertyFilenameRegex.matcher(virtualFileEntry.getAbsoluteFilePath());
                         if (matcher.matches()) {
                             if (logger.isTraceEnabled()) logger.trace("Property file " + propertyFileName + " regex matched by " + virtualFileEntry.getAbsoluteFilePath());
-                            if (consoleTracing) System.out.println("Property file " + propertyFileName + " regex matched by " + virtualFileEntry.getAbsoluteFilePath());
+                            if (consoleTracing) System.out.println("CombinedPropertyFileManager: Property file " + propertyFileName + " regex matched by " + virtualFileEntry.getAbsoluteFilePath());
                             return true;
                         }
                     }
                     // Deliberately fall through to simple casd if match doesn't work - that way we don't have to specify a regex to get a match
                     if (virtualFileEntry.getAbsoluteFilePath().endsWith(propertyFileName)) {
                         if (logger.isTraceEnabled()) logger.trace("Property file " + propertyFileName + " matched by " + virtualFileEntry.getAbsoluteFilePath());
-                        if (consoleTracing) System.out.println("Property file " + propertyFileName + " matched by " + virtualFileEntry.getAbsoluteFilePath());
+                        if (consoleTracing) System.out.println("CombinedPropertyFileManager: Property file " + propertyFileName + " matched by " + virtualFileEntry.getAbsoluteFilePath());
                         return true;
                     }
                 }
@@ -202,7 +202,7 @@ public class CombinedPropertyFileManager {
         while (pathsItr.hasNext()) {
             String path = pathsItr.next();
             if (logger.isTraceEnabled()) logger.trace("About to find properties from path " + path);
-            if (consoleTracing) System.out.println("About to find properties from path " + path);
+            if (consoleTracing) System.out.println("CombinedPropertyFileManager: About to find properties from path " + path);
             try {
                 PropertiesFileTraverser propertiesFileTraverser = new PropertiesFileTraverser();
                 propertiesFileTraverser.traverse(new File(path));
@@ -257,7 +257,7 @@ public class CombinedPropertyFileManager {
                 JarEntry jarEntry = jarFile.getJarEntry(virtualFileEntry.getRelativeFilePath());
                 InputStream jarEntryInputStream = jarFile.getInputStream(jarEntry);
                 if (logger.isTraceEnabled()) logger.trace("About to load properties file from jar " + virtualFileEntry.getAbsoluteFilePath() + ":" + virtualFileEntry.getRelativeFilePath());
-                if (consoleTracing) System.out.println("About to load properties file from jar " + virtualFileEntry.getAbsoluteFilePath() + ":" + virtualFileEntry.getRelativeFilePath());
+                if (consoleTracing) System.out.println("CombinedPropertyFileManager: About to load properties file from jar " + virtualFileEntry.getAbsoluteFilePath() + ":" + virtualFileEntry.getRelativeFilePath());
                 if (virtualFileEntry.getRelativeFilePath().endsWith(".xml")) {
                     properties.loadFromXML(jarEntryInputStream);
                 }
@@ -269,7 +269,7 @@ public class CombinedPropertyFileManager {
             }
             else if (virtualFileEntry.getFileType() == virtualFileEntry.TYPE_FILE) {
                 if (logger.isTraceEnabled()) logger.trace("About to load properties file " + virtualFileEntry.getAbsoluteFilePath());
-                if (consoleTracing) System.out.println("About to load properties file " + virtualFileEntry.getAbsoluteFilePath());
+                if (consoleTracing) System.out.println("CombinedPropertyFileManager: About to load properties file " + virtualFileEntry.getAbsoluteFilePath());
                 if (virtualFileEntry.getAbsoluteFilePath().endsWith(".xml")) {
                     properties.loadFromXML(new FileInputStream(virtualFileEntry.getAbsoluteFilePath()));
                 }
