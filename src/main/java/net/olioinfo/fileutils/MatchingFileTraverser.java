@@ -25,7 +25,8 @@ import java.util.regex.Pattern;
  * Match files in a tree
  *
  * @author Tracy Flynn
- * @since Jan 31, 2010
+ * @version 0.6
+ * @since 0.4
  */
 public class MatchingFileTraverser extends AbstractFileTraverser {
 

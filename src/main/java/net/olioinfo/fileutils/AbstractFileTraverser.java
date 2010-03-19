@@ -29,8 +29,26 @@ import java.util.Enumeration;
  * per directory or file encountered while traversing the tree. Call traverse(somePath) on the root of the tree to
  * start the traversal.</p>
  *
+ * <p>The following JVM options are available for use in debugging and isolating problems during initialization.
+ * They should not be used in other cases or in production, since they cause performance degradation and
+ * may generate a lot of output. These options apply to the whole package.</p>
+ *
+ * <ul><li>-Dnet.olioinfo.fileutils.logging.configuration.disableInternalConfiguration</li></ul>
+ *
+ * <p>Disable any internal configuration of loggers using log4j.
+ * The default logger is a org.apache.log4j.ConsoleAppender at level WARN.
+ * This may generate errors due to incomplete Log4J configuration information. </p>
+ *
+ * <ul><li>-Dnet.olioinfo.fileutils.logLevel</li></ul>
+ *
+ * <p>Override the default Log4j logging level of WARN. </p>
+ *
+ * <ul><li>-Dnet.olioinfo.fileutils.consoleTracing</li></ul>
+ *
+ * <p>Provide detailed tracing to the System.out device. Does not use logging. </p>
+ *
  * @author Tracy Flynn
- * @version 0.3
+ * @version 0.6
  * @since 0.1
  */
 public abstract class AbstractFileTraverser {

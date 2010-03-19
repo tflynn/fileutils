@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
  *  'System.getProperty("user.dir")' ('user.dir' is usually the directory active when the JVM is started).</p>
  *
  * @author Tracy Flynn
- * @version 0.4
+ * @version 0.6
  * @since 0.1
  */
 public class CombinedPropertyFileManager {

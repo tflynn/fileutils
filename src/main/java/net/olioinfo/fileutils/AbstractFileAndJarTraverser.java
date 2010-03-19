@@ -28,7 +28,7 @@ import java.util.jar.JarFile;
  * to define selection criteria for inclusion in the final list of matching files and directories.</p>
  *
  * @author Tracy Flynn
- * @version 0.3
+ * @version 0.6
  * @since 0.1
  */
 public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser {
