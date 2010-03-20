@@ -69,7 +69,7 @@ public abstract class AbstractFileTraverser {
      * @throws IOException
      */
     public final void traverse( final File f ) throws IOException {
-        if (consoleTracing) System.out.println("traverse: file " + f.getAbsolutePath());
+        if (consoleTracing) System.out.println("AbstractFileTraverser: traverse: file " + f.getAbsolutePath());
         if (f.exists()) {
             if (consoleTracing) System.out.println("AbstractFileTraverser: traverse: file exists " + f.getAbsolutePath());
             if (f.isDirectory()) {
