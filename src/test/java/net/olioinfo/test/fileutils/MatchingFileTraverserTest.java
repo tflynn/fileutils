@@ -49,7 +49,9 @@ public class MatchingFileTraverserTest extends TestCase {
      {
          return new TestSuite( MatchingFileTraverserTest.class );
      }
-    public void testFindFilesByPackageAndPaths() {
+
+
+     public void testFindFilesByPackageAndPaths() {
 
         ArrayList<String> paths = new ArrayList<String>();
         String userDir = System.getProperty("user.dir");
@@ -74,9 +76,9 @@ public class MatchingFileTraverserTest extends TestCase {
         }
         matchingFileList = matchingFileTraverser.getFileList();
         assertTrue("There should be five matching files",matchingFileList.size() == 5);
-        for (String fileName : matchingFileList) {
-            System.out.format("Matching file found %s\n", fileName);
-        }
+//        for (String fileName : matchingFileList) {
+//            System.out.format("Matching file found %s\n", fileName);
+//        }
 
 
         matchingFileTraverser = new MatchingFileTraverser();
