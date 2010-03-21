@@ -19,6 +19,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import net.olioinfo.fileutils.MatchingFileTraverser;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -48,22 +49,64 @@ public class MatchingFileTraverserTest extends TestCase {
      {
          return new TestSuite( MatchingFileTraverserTest.class );
      }
-
     public void testFindFilesByPackageAndPaths() {
 
         ArrayList<String> paths = new ArrayList<String>();
         String userDir = System.getProperty("user.dir");
-        paths.add(userDir + "/" + "src/test/java");
+        paths.add(String.format("%s/%s",userDir,"src/test/java"));
 
         ArrayList<String> matchingPaths;
-        matchingPaths = MatchingFileTraverser.findFilesByPackageAndPaths(MatchingFileTraverserTest.class, paths, "resources1/test-props.properties");
-        assertEquals(matchingPaths.get(0),"/Users/tracy/Everything/Activities/net-olioinfo-fileutils/src/test/java/net/olioinfo/test/fileutils/resources1/test-props.properties");
-
-        matchingPaths = MatchingFileTraverser.findFilesByPackageAndPaths(MatchingFileTraverserTest.class, paths, "resources2/test-props.properties");
-        assertEquals(matchingPaths.get(0),"/Users/tracy/Everything/Activities/net-olioinfo-fileutils/src/test/java/net/olioinfo/test/fileutils/resources2/test-props.properties");
-
-
-        
+        matchingPaths = MatchingFileTraverser.findFilesFromPackageAndPaths(MatchingFileTraverserTest.class, paths, ".*resources1/fileutils-.*\\.properties");
+        assertTrue("There should be four matching paths",matchingPaths.size() == 4);
     }
 
+    public void testFileMatch() {
+        ArrayList<String> matchingFileList = null;
+        MatchingFileTraverser matchingFileTraverser = new MatchingFileTraverser();
+        matchingFileTraverser.setMatchingString(".*properties$");
+
+        try {
+            matchingFileTraverser.traverse(new File(String.format("%s/src",System.getProperty("user.dir"))));
+        }
+        catch (Exception ex) {
+            System.out.format("testAbstractFileTraverser exception %s\n",ex.toString());
+            ex.printStackTrace(System.out);
+        }
+        matchingFileList = matchingFileTraverser.getFileList();
+        assertTrue("There should be five matching files",matchingFileList.size() == 5);
+        for (String fileName : matchingFileList) {
+            System.out.format("Matching file found %s\n", fileName);
+        }
+
+
+        matchingFileTraverser = new MatchingFileTraverser();
+        matchingFileTraverser.setMatchingString(".*fileutils-test-.*\\.properties$");
+
+        try {
+            matchingFileTraverser.traverse(new File(String.format("%s/src",System.getProperty("user.dir"))));
+        }
+        catch (Exception ex) {
+            System.out.format("testAbstractFileTraverser exception %s\n",ex.toString());
+            ex.printStackTrace(System.out);
+        }
+        matchingFileList = matchingFileTraverser.getFileList();
+        for (String fileName : matchingFileList) {
+            System.out.format("Matching file found %s\n", fileName);
+        }
+        assertTrue("There should be four matching files",matchingFileList.size() == 4);
+
+        matchingFileTraverser = new MatchingFileTraverser();
+        matchingFileTraverser.setMatchingString(".*nothing$");
+
+        try {
+            matchingFileTraverser.traverse(new File(String.format("%s/src",System.getProperty("user.dir"))));
+        }
+        catch (Exception ex) {
+            System.out.format("testAbstractFileTraverser exception %s\n",ex.toString());
+            ex.printStackTrace(System.out);
+        }
+        matchingFileList = matchingFileTraverser.getFileList();
+        assertTrue("There should be no matching files",matchingFileList.size() == 0);
+
+    }
 }

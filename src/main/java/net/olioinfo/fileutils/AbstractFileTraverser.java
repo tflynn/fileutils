@@ -58,7 +58,12 @@ public abstract class AbstractFileTraverser {
      */
     public AbstractFileTraverser(){
         if (System.getProperty("net.olioinfo.fileutils.consoleTracing") != null) {
-            consoleTracing = true;
+            if (System.getProperty("net.olioinfo.fileutils.consoleTracing").equalsIgnoreCase("true")) {
+                consoleTracing = true;
+            }
+            else {
+                consoleTracing = false;
+            }
         }
     }
 
@@ -69,11 +74,11 @@ public abstract class AbstractFileTraverser {
      * @throws IOException
      */
     public final void traverse( final File f ) throws IOException {
-        if (consoleTracing) System.out.println("AbstractFileTraverser: traverse: file " + f.getAbsolutePath());
+        if (consoleTracing) System.out.format("AbstractFileTraverser: traverse: file %s\n", f.getAbsolutePath());
         if (f.exists()) {
-            if (consoleTracing) System.out.println("AbstractFileTraverser: traverse: file exists " + f.getAbsolutePath());
+            if (consoleTracing) System.out.format("AbstractFileTraverser: traverse: file exists %s\n", f.getAbsolutePath());
             if (f.isDirectory()) {
-                if (consoleTracing) System.out.println("AbstractFileTraverser: traverse: file is a directory " + f.getAbsolutePath());
+                if (consoleTracing) System.out.format("AbstractFileTraverser: traverse: file is a directory %s\n", f.getAbsolutePath());
                 onDirectory(f);
                 final File[] children = f.listFiles();
                 for( File child : children ) {

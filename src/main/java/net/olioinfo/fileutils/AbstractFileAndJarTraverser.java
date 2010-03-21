@@ -67,7 +67,7 @@ public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser 
                     virtualFileEntry.setRelativeFilePath(jarEntry.getName());
 
                     if (includeFile(virtualFileEntry)) {
-                        if (consoleTracing) System.out.println("AbstractFileAndJarTraverser:onFile Adding Jar entry to virtual file list: " + path + ":" + jarEntry.getName());
+                        if (consoleTracing) System.out.format("AbstractFileAndJarTraverser:onFile Adding Jar entry to virtual file list: %s:%s\n", path , jarEntry.getName());
                         fileList.add(virtualFileEntry);
                     }
                 }
@@ -75,7 +75,7 @@ public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser 
             }
             catch (Exception ex) {
                 if (consoleTracing) {
-                    System.out.println("AbstractFileAndJarTraverser:onFile  Error during onFile processing " + path + " generated an error. This file will be ignored. " + ex.toString());
+                    System.out.format("AbstractFileAndJarTraverser:onFile This file will be ignored. Error while onFile was processing %s generated error %s\n",path, ex.toString());
                     ex.printStackTrace(System.out);
                 }
             }
@@ -86,9 +86,10 @@ public abstract class AbstractFileAndJarTraverser extends AbstractFileTraverser 
             VirtualFileEntry virtualFileEntry = new VirtualFileEntry();
             virtualFileEntry.setAbsoluteFilePath(path);
             virtualFileEntry.setFileType(VirtualFileEntry.TYPE_FILE);
+            virtualFileEntry.setRelativeFilePath(new File(path).getName());
 
             if (includeFile(virtualFileEntry)) {
-                if (consoleTracing) System.out.println("AbstractFileAndJarTraverser:onFile Adding regular file entry to virtual file list: " + path );
+                if (consoleTracing) System.out.format("AbstractFileAndJarTraverser:onFile Adding regular file entry %s to virtual file list\n" , path );
                 fileList.add(virtualFileEntry);
             }
         }

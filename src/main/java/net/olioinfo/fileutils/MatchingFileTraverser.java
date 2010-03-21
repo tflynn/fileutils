@@ -29,13 +29,10 @@ import java.util.regex.Pattern;
  */
 public class MatchingFileTraverser extends AbstractFileTraverser {
 
-    private String filePatternMatch;
-
-    private Pattern filePatternMatchRegex;
-
-
     private ArrayList<String> fileList = new ArrayList<String>();
     private ArrayList<String> directoryList = new ArrayList<String>();
+
+    private String matchingString = null;
 
     /**
      * <p>Create an instance of MatchingFileTraverser.</p>
@@ -53,30 +50,6 @@ public class MatchingFileTraverser extends AbstractFileTraverser {
         this.directoryList = new ArrayList<String>();
     }
 
-    /**
-     * Get the matching file pattern
-     *
-     * @return Matching file pattern
-     */
-    public String getFilePatternMatch() {
-        return this.filePatternMatch;
-    }
-
-    public void setFilePatternMatch(String filePatternMatch) {
-        this.filePatternMatch = filePatternMatch;
-        try {
-            this.filePatternMatchRegex = Pattern.compile(this.filePatternMatch);
-        }
-        catch (Exception ex) {
-            if (consoleTracing) {
-                System.out.println("MatchingFileTraverser.setFilePatternMatch Exception raised while trying to compile supplied file name regular expression \"" + this.filePatternMatch + "\" " + ex.toString() );
-                ex.printStackTrace(System.out);
-            }
-            this.filePatternMatchRegex = null;
-        }
-    }
-
-
     public ArrayList<String> getFileList() {
         return fileList;
     }
@@ -93,8 +66,16 @@ public class MatchingFileTraverser extends AbstractFileTraverser {
         this.directoryList = directoryList;
     }
 
-    
+    public void setMatchingString(String matchingString) {
+        this.matchingString = matchingString;
 
+    }
+
+    public String getMatchingString() {
+        return this.matchingString;
+    }
+
+    
     /**
      * Implementation of the AbstractFileTraverser.onFile method for Jar and regular files
      *
@@ -102,11 +83,13 @@ public class MatchingFileTraverser extends AbstractFileTraverser {
      *
      */
     public void onFile( final File f ) {
-        String path = f.getAbsolutePath();
-        Matcher matcher = this.filePatternMatchRegex.matcher(path);
+        String fileName = f.getAbsolutePath();
+        Pattern matchingPattern = Pattern.compile(this.matchingString);
+        Matcher matcher = matchingPattern.matcher(fileName);
         if (matcher.matches()) {
-            this.fileList.add(path);
+            this.fileList.add(f.getAbsolutePath());
         }
+
     }
 
 
@@ -130,12 +113,19 @@ public class MatchingFileTraverser extends AbstractFileTraverser {
      * @param matchingFilename name for files to match
      * @return Array of fully-qualitifed matching file names
      */
-    public static ArrayList<String> findFilesByPackageAndPaths(Class klass, ArrayList<String> paths, String matchingFilename) {
+    public static ArrayList<String> findFilesFromPackageAndPaths(Class klass, ArrayList<String> paths, String matchingFilename) {
 
         boolean  consoleTracing = false;
         if (System.getProperty("net.olioinfo.fileutils.consoleTracing") != null) {
-            consoleTracing = true;
+            if (System.getProperty("net.olioinfo.fileutils.consoleTracing").equalsIgnoreCase("true")) {
+                consoleTracing = true;
+            }
+            else {
+                consoleTracing = false;
+            }
         }
+
+
 
         ArrayList<String> matchingPaths = new ArrayList<String>();
 
@@ -143,19 +133,45 @@ public class MatchingFileTraverser extends AbstractFileTraverser {
         for (String currentPath : paths ) {
             String fullPathName = null;
             try {
-                fullPathName  = currentPath + "/" + packageName.replaceAll("\\.","/") + "/" + matchingFilename;
-                if ( (new File(fullPathName)).exists()) {
-                    matchingPaths.add(fullPathName);
+                fullPathName  = String.format("%s/%s",currentPath,convertPackageNameToDirectoriesSegment(packageName));
+                MatchingFileTraverser matchingFileTraverser = new MatchingFileTraverser();
+                matchingFileTraverser.setMatchingString(matchingFilename);
+                try {
+                    matchingFileTraverser.traverse(new File(fullPathName));
+                }
+                catch (Exception ex) {
+                    if (consoleTracing) {
+                        System.out.format("MatchingFileTravers.findFilesFromPackageAndPaths ignoring exception %s\n",ex.toString());
+                        ex.printStackTrace(System.out);
+                    }
+                }
+
+                ArrayList<String> matchingFileList = matchingFileTraverser.getFileList();
+                for (String matchingFile : matchingFileList ) {
+                    matchingPaths.add(matchingFile);
+                    if (consoleTracing) {
+                        System.out.format("MatchingFileTraverser.findFilesFromyPackageAndPaths adding %s\n", matchingFile);
+                    }
                 }
             }
             catch (Exception ex) {
                 if (consoleTracing) {
-                    System.out.println("MatchingFileTraverser.findFilesByPackageAndPaths Ignoring error matching path " + fullPathName + " " + ex.toString());
+                    System.out.format("MatchingFileTraverser.findFilesFromyPackageAndPaths Ignoring error %s which matching path %s\n", ex.toString(), fullPathName);
                     ex.printStackTrace(System.out);
                 }
             }
         }
         return matchingPaths;
+    }
+
+    /**
+     * Convert a package name into a directory tree
+     *
+     * @param packageName A String containing a Java package name that uses standard '.' notation to separate namespace elements
+     * @return A string  representing the directory tree segment implied by the package name
+     */
+    public static String convertPackageNameToDirectoriesSegment(String packageName) {
+        return packageName.replaceAll("\\.","/");
     }
 }
 

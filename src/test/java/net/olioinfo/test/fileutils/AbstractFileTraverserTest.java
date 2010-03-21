@@ -17,10 +17,11 @@ package net.olioinfo.test.fileutils;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import net.olioinfo.fileutils.VirtualFileEntry;
+import net.olioinfo.fileutils.AbstractFileTraverser;
 
 import java.io.File;
-import java.util.Iterator;
+import java.util.ArrayList;
+
 
 
 /**
@@ -54,23 +55,39 @@ public class AbstractFileTraverserTest  extends TestCase {
      */
     public void testAbstractFileTraverser()
     {
-        System.out.println("Testing recursion in directory " + System.getProperty("user.dir"));
+        final ArrayList<String> fileList = new ArrayList<String>();
 
-        FileAndJarTraverser traverser = new FileAndJarTraverser();
+
+        class FileTraverser extends AbstractFileTraverser {
+
+
+            @Override
+            public void onDirectory(File d) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void onFile(File f) {
+                if (f.getAbsolutePath().endsWith("properties")) {
+                    if (f.getName().startsWith("fileutils")) {
+                        fileList.add(f.getAbsolutePath());
+                    }
+                }
+            }
+        }
+
         try {
-            traverser.traverse(new File(System.getProperty("user.dir")));
+            FileTraverser fileTraverser = new FileTraverser();
+            fileTraverser.traverse(new File(String.format("%s/src",System.getProperty("user.dir"))));
         }
         catch (Exception ex) {
-            //
+            System.out.format("testAbstractFileTraverser exception %s\n",ex.toString());
+            ex.printStackTrace(System.out);
         }
+        assertTrue("There should be four matching files", fileList.size() == 4);
 
-        Iterator<VirtualFileEntry> traverserItr = traverser.getFileList().iterator();
-        while (traverserItr.hasNext()) {
-            VirtualFileEntry virtualFileEntry = traverserItr.next();
-            System.out.println(virtualFileEntry.getAbsoluteFilePath());
-        }
-        assertTrue( true );
     }
+
 
 }
 
