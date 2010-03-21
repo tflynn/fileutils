@@ -57,7 +57,7 @@ public class MatchingFileAnJarTraverserTest extends TestCase {
         ArrayList<String> paths = new ArrayList<String>();
         String userDir = System.getProperty("user.dir");
         paths.add(String.format("%s/%s",userDir,"src/test/java"));
-        ArrayList<VirtualFileEntry> matchingFileList = MatchingFileAndJarTraverser.findPropertiesFiles(paths,".*properties$");
+        ArrayList<VirtualFileEntry> matchingFileList = MatchingFileAndJarTraverser.findFilesFromPaths(paths,".*properties$");
 
         for (VirtualFileEntry virtualFileEntry : matchingFileList) {
             System.out.format("Matching file found %s:%s\n", virtualFileEntry.getAbsoluteFilePath(),virtualFileEntry.getRelativeFilePath());

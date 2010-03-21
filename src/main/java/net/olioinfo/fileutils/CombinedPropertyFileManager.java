@@ -14,13 +14,17 @@
  */
 package net.olioinfo.fileutils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -44,6 +48,8 @@ public class CombinedPropertyFileManager {
     private ArrayList<String> searchPaths = new ArrayList<String>();
 
     private String propertyFileName = null;
+
+    private Pattern compiledPropertyFilenameRegex = null;
 
     protected boolean consoleTracing = false;
 
@@ -83,12 +89,7 @@ public class CombinedPropertyFileManager {
      */
     public CombinedPropertyFileManager(){
         if (System.getProperty("net.olioinfo.fileutils.consoleTracing") != null) {
-            if (System.getProperty("net.olioinfo.fileutils.consoleTracing").equalsIgnoreCase("true")) {
-                consoleTracing = true;
-            }
-            else {
-                consoleTracing = false;
-            }
+            consoleTracing = true;
         }
     }
 
@@ -124,6 +125,18 @@ public class CombinedPropertyFileManager {
      */
     public void setPropertyFileName(String propertyFileName) {
         this.propertyFileName = propertyFileName;
+        try {
+            this.compiledPropertyFilenameRegex = Pattern.compile(propertyFileName);
+            if (consoleTracing) System.out.println("CombinedPropertyFileManager:setPropertyFileName Regex compilation succeeded for \"" + propertyFileName + "\"");
+        }
+        catch (Exception ex) {
+            if (consoleTracing) {
+                System.out.println("CombinedPropertyFileManager:setPropertyFileName Unable to treat filename as regular expression. Defaulting to matching at end of path." + ex.toString());
+                ex.printStackTrace(System.out);
+            }
+            this.compiledPropertyFilenameRegex = null;
+        }
+
     }
 
     /**
@@ -132,7 +145,10 @@ public class CombinedPropertyFileManager {
      * @return List of all matching properties files
      */
     public ArrayList<VirtualFileEntry> findAll() {
-        ArrayList<VirtualFileEntry> matchingFileList = MatchingFileAndJarTraverser.findPropertiesFiles(searchPaths,propertyFileName);
+        ArrayList<String> paths = new ArrayList<String>();
+        String userDir = System.getProperty("user.dir");
+        paths.add(String.format("%s/%s",userDir,"src/test/java"));
+        ArrayList<VirtualFileEntry> matchingFileList = MatchingFileAndJarTraverser.findFilesFromPaths(searchPaths,propertyFileName);
         return matchingFileList;
     }
 
@@ -193,7 +209,7 @@ public class CombinedPropertyFileManager {
         }
         catch (Exception ex) {
             if (consoleTracing) {
-                System.out.format("CombinedPropertyFileManager:loadSingle. Error while loading properties files. Ignoring .. %s\n" , ex.toString());
+                System.out.format("CombinedPropertyFileManager:loadSingle. Error while loading properties files. Ignoring .. %s\n" + ex.toString());
                 ex.printStackTrace(System.out);
             }
 
@@ -204,7 +220,7 @@ public class CombinedPropertyFileManager {
     }
 
     /**
-     * Merge two sets of properties, returning the original set (now merged)
+     * Merge two sets of properties, returnning the original set (now merged)
      * 
      * @param original
      * @param fresh

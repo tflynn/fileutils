@@ -42,7 +42,14 @@ public class MatchingFileAndJarTraverser {
     }
 
     
-    public static ArrayList<VirtualFileEntry> findPropertiesFiles(ArrayList<String> paths, String propertyFileNameRegex) {
+    /**
+     * <p>Find all the files in the directory trees rooted in the given paths that match the file name specified.</p>
+     *
+     * @param paths List of fully-qualified path names to search
+     * @param fileNameRegex name for files to match
+     * @return Array of fully-qualitifed matching file names
+     */
+    public static ArrayList<VirtualFileEntry> findFilesFromPaths(ArrayList<String> paths, String fileNameRegex) {
 
         boolean  consoleTracing = false;
         if (System.getProperty("net.olioinfo.fileutils.consoleTracing") != null) {
@@ -55,20 +62,20 @@ public class MatchingFileAndJarTraverser {
         }
 
 
-        final String finalPropertyFileNameRegex = propertyFileNameRegex;
+        final String finalFileNameRegex = fileNameRegex;
 
         class FileAndJarTraverser extends AbstractFileAndJarTraverser {
 
 
             @Override
             public boolean includeFile(VirtualFileEntry virtualFileEntry) {
-                Pattern matchingPattern = Pattern.compile(finalPropertyFileNameRegex);
+                Pattern matchingPattern = Pattern.compile(finalFileNameRegex);
 
                 if (virtualFileEntry.getFileType() == VirtualFileEntry.TYPE_JAR) {
                     Matcher matcher = matchingPattern.matcher(virtualFileEntry.getRelativeFilePath());
                     if (matcher.matches()) {
                         if (consoleTracing) {
-                            System.out.format("MatchingFileAndJarTraverser.findPropertiesFiles adding JAR file %s with entry %s to matching list\n", virtualFileEntry.getAbsoluteFilePath(),virtualFileEntry.getRelativeFilePath());
+                            System.out.format("MatchingFileAndJarTraverser.findFilesFromPaths adding JAR file %s with entry %s to matching list\n", virtualFileEntry.getAbsoluteFilePath(),virtualFileEntry.getRelativeFilePath());
                         }
                         return true;
                     }
@@ -77,7 +84,7 @@ public class MatchingFileAndJarTraverser {
                     Matcher matcher = matchingPattern.matcher(virtualFileEntry.getRelativeFilePath());
                     if (matcher.matches()) {
                         if (consoleTracing) {
-                            System.out.format("MatchingFileAndJarTraverser.findPropertiesFiles adding reqular file %s with entry %s to matching list\n", virtualFileEntry.getAbsoluteFilePath(),virtualFileEntry.getRelativeFilePath());
+                            System.out.format("MatchingFileAndJarTraverser.findFilesFromPaths adding reqular file %s with entry %s to matching list\n", virtualFileEntry.getAbsoluteFilePath(),virtualFileEntry.getRelativeFilePath());
                         }
                         return true;
                     }
@@ -105,7 +112,7 @@ public class MatchingFileAndJarTraverser {
         }
         catch (Exception ex) {
             if (consoleTracing) {
-                System.out.format("testAbstractFileAndJarTraverser exception %s\n",ex.toString());
+                System.out.format("MatchingFileAndJarTraverser.findFilesFromPaths exception %s\n",ex.toString());
                 ex.printStackTrace(System.out);
             }
         }
@@ -115,6 +122,46 @@ public class MatchingFileAndJarTraverser {
     }
 
 
+    /**
+     * <p>Find all the files in the directory trees rooted in the given paths that are in a directory corresponding
+     * to the package of the specified ciass and match the file name specified.</p>
+     *
+     * @param klass Class for package to search
+     * @param paths List of fully-qualified path names to search
+     * @param fileNameRegex name for files to match
+     * @return Array of fully-qualitifed matching file entries
+     */
+    public static ArrayList<VirtualFileEntry> findFilesFromPackageAndPaths(Class klass, ArrayList<String> paths, String fileNameRegex) {
+
+        boolean  consoleTracing = false;
+        if (System.getProperty("net.olioinfo.fileutils.consoleTracing") != null) {
+            if (System.getProperty("net.olioinfo.fileutils.consoleTracing").equalsIgnoreCase("true")) {
+                consoleTracing = true;
+            }
+            else {
+                consoleTracing = false;
+            }
+        }
+
+
+        String packageFileNameRegex = String.format(".*%s/%s$", convertPackageNameToDirectoriesSegment(klass.getPackage().getName()), fileNameRegex);
+        if (consoleTracing) {
+            System.out.format("MatchingFileAndJarTraverser.findFilesFromPackageAndPaths calling MatchingFileAndJarTraverser.findFilesFromPaths with file name pattern %s\n",packageFileNameRegex);
+        }
+
+        return MatchingFileAndJarTraverser.findFilesFromPaths(paths,packageFileNameRegex);
+
+    }
+
+    /**
+     * Convert a package name into a directory tree
+     *
+     * @param packageName A String containing a Java package name that uses standard '.' notation to separate namespace elements
+     * @return A string  representing the directory tree segment implied by the package name
+     */
+    public static String convertPackageNameToDirectoriesSegment(String packageName) {
+        return packageName.replaceAll("\\.","/");
+    }
 
 
 }
