@@ -53,6 +53,8 @@ public class CombinedPropertyFileManager {
 
     protected boolean consoleTracing = false;
 
+    private Class klass = null;
+
     /**
      * <p>Load and combine property files found in directory tree rooted at path.</p>
      *
@@ -80,8 +82,44 @@ public class CombinedPropertyFileManager {
         CombinedPropertyFileManager propertyFileLoader = new CombinedPropertyFileManager();
         propertyFileLoader.setSearchPaths(paths);
         propertyFileLoader.setPropertyFileName(propertyFileNameRegex);
-        return propertyFileLoader.loadAll();
+        return propertyFileLoader.loadAllFromPaths();
     }
+
+
+
+    /**
+     * <p>Load and combine property files qualified by package found in directory tree rooted at path.</p>
+     *
+     * @param klass Class from which to derive package
+     * @param path Top of tree
+     * @param propertyFileNameRegex Regex for Name of property file to load
+     * @return Properties instance with contents of all properties files combined
+     *
+     */
+    public static Properties loadAndCombinePackageProperties(Class klass, String path, String propertyFileNameRegex) {
+        ArrayList<String> pathList = new ArrayList<String>();
+        pathList.add(path);
+        return CombinedPropertyFileManager.loadAndCombinePackageProperties(klass,pathList,propertyFileNameRegex);
+    }
+
+    /**
+     * <p>Load and combined property files qualified by package found in directory trees rooted at specified paths</p>
+     *
+     * @param klass Class from which to derive package
+     * @param paths List of paths to search
+     * @param propertyFileNameRegex Regex for Name of property file to load
+     * @return Properties instance with contents of all properties files combined
+     *
+     */
+    public static Properties loadAndCombinePackageProperties(Class klass, ArrayList<String> paths, String propertyFileNameRegex) {
+        CombinedPropertyFileManager propertyFileLoader = new CombinedPropertyFileManager();
+        propertyFileLoader.setSearchPaths(paths);
+
+        propertyFileLoader.setPropertyFileName(propertyFileNameRegex);
+        propertyFileLoader.klass = klass;
+        return propertyFileLoader.loadAllFromPackageAndPaths();
+    }
+
 
     /**
      * <p>Create an instance of CombinedPropertyFileManager.</p>
@@ -118,6 +156,7 @@ public class CombinedPropertyFileManager {
         return propertyFileName;
     }
 
+
     /**
      * Set the name of the property file being searched for
      * 
@@ -125,18 +164,6 @@ public class CombinedPropertyFileManager {
      */
     public void setPropertyFileName(String propertyFileName) {
         this.propertyFileName = propertyFileName;
-        try {
-            this.compiledPropertyFilenameRegex = Pattern.compile(propertyFileName);
-            if (consoleTracing) System.out.println("CombinedPropertyFileManager:setPropertyFileName Regex compilation succeeded for \"" + propertyFileName + "\"");
-        }
-        catch (Exception ex) {
-            if (consoleTracing) {
-                System.out.println("CombinedPropertyFileManager:setPropertyFileName Unable to treat filename as regular expression. Defaulting to matching at end of path." + ex.toString());
-                ex.printStackTrace(System.out);
-            }
-            this.compiledPropertyFilenameRegex = null;
-        }
-
     }
 
     /**
@@ -144,10 +171,8 @@ public class CombinedPropertyFileManager {
      *
      * @return List of all matching properties files
      */
-    public ArrayList<VirtualFileEntry> findAll() {
+    public ArrayList<VirtualFileEntry> findAllFromPaths() {
         ArrayList<String> paths = new ArrayList<String>();
-        String userDir = System.getProperty("user.dir");
-        paths.add(String.format("%s/%s",userDir,"src/test/java"));
         ArrayList<VirtualFileEntry> matchingFileList = MatchingFileAndJarTraverser.findFilesFromPaths(searchPaths,propertyFileName);
         return matchingFileList;
     }
@@ -158,15 +183,42 @@ public class CombinedPropertyFileManager {
      *
      * @return Properties instance with contents of all properties files combined
      */
-    public Properties loadAll() {
+    public Properties loadAllFromPaths() {
 
-        ArrayList<VirtualFileEntry> allPropertyFileEntries = findAll();
+        ArrayList<VirtualFileEntry> allPropertyFileEntries = findAllFromPaths();
         for (VirtualFileEntry virtualFileEntry: allPropertyFileEntries ) {
             loadSingle(virtualFileEntry,combinedProperties);
         }
         // Hand back whatever was found. Errors are logged but don't get loaded (obviously!)
         return combinedProperties;
 
+    }
+
+    /**
+     * Load all the properties in the search paths listed
+     *
+     * @return Properties instance with contents of all properties files combined
+     */
+    public Properties loadAllFromPackageAndPaths() {
+
+        ArrayList<VirtualFileEntry> allPropertyFileEntries = findAllFromPackageAndPaths();
+        for (VirtualFileEntry virtualFileEntry: allPropertyFileEntries ) {
+            loadSingle(virtualFileEntry,combinedProperties);
+        }
+        // Hand back whatever was found. Errors are logged but don't get loaded (obviously!)
+        return combinedProperties;
+
+    }
+
+    /**
+     * Find all the properties in the search paths listed
+     *
+     * @return List of all matching properties files
+     */
+    public ArrayList<VirtualFileEntry> findAllFromPackageAndPaths() {
+        ArrayList<String> paths = new ArrayList<String>();
+        ArrayList<VirtualFileEntry> matchingFileList = MatchingFileAndJarTraverser.findFilesFromPackageAndPaths(klass,searchPaths,propertyFileName);
+        return matchingFileList;
     }
 
     /**
