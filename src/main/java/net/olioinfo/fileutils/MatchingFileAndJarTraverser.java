@@ -143,8 +143,16 @@ public class MatchingFileAndJarTraverser {
             }
         }
 
+        String packageFileNameRegex = null;
+        if (klass.getPackage() == null) {
+            packageFileNameRegex = fileNameRegex;
+        }
+        else {
+            String packageName = klass.getPackage().getName();
+            String packagePath = convertPackageNameToDirectoriesSegment(packageName);
+            packageFileNameRegex = String.format(".*%s/%s$", packagePath , fileNameRegex);
+        }
 
-        String packageFileNameRegex = String.format(".*%s/%s$", convertPackageNameToDirectoriesSegment(klass.getPackage().getName()), fileNameRegex);
         if (consoleTracing) {
             System.out.format("MatchingFileAndJarTraverser.findFilesFromPackageAndPaths calling MatchingFileAndJarTraverser.findFilesFromPaths with file name pattern %s\n",packageFileNameRegex);
         }
